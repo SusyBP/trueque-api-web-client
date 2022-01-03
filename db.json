@@ -1,0 +1,60 @@
+{
+  "personas": [
+    {
+      "id": 1,
+      "nombre": "susy",
+      "apellido": "becerra",
+      "correo": "",
+      "numMovil": "53621336",
+      "numFijo": "7711111",
+      "direccion": "",
+      "provincia": "La Habana",
+      "clave": "07500d6ebc31a038972b0f3be5f1e9a8561677ed415ff78ffcc46fb9f5043733"
+    },
+    {
+      "id": 2,
+      "nombre": "nayhan",
+      "apellido": "provedo",
+      "correo": "",
+      "numMovil": "58747585",
+      "numFijo": "7711111",
+      "direccion": "",
+      "provincia": "La Habana",
+      "clave": "f2fe9e08a1df7c46b97b8b221074c674c2bc566e2d331a4a14a9f789fda2bf83"
+    },
+    {
+      "id": 4,
+      "nombre": "reinier",
+      "apellido": "rivero",
+      "correo": "",
+      "numMovil": "53227748",
+      "numFijo": "7711111",
+      "direccion": "",
+      "provincia": "La Habana",
+      "clave": "reinier"
+    },
+    {
+      "id": 5,
+      "nombre": "nadir",
+      "apellido": "provedo",
+      "correo": "",
+      "numMovil": "53973091",
+      "numFijo": "7711111",
+      "direccion": "",
+      "provincia": "La Habana",
+      "clave": "nadir"
+    }
+  ],
+  "trueques": [
+    {
+      "id": 3,
+      "idPersona": 1,
+      "tipo": "completo",
+      "fecha": "10/28/2021 10:43:25 AM",
+      "pro": "tenis nike",
+      "bus": "chancletas",
+      "infoExtra": "",
+      "foto": null
+    }
+  ]
+}
