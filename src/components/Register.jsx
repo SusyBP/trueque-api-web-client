@@ -44,7 +44,7 @@ const Register = () => {
                     numMovil: cellphoneNum,
                     numFijo: landlineNum,
                     correo: email,
-                    provincia: "La Habana",
+                    provincia: province,
                     dirección: address,
                     clave: encript,
                 })
@@ -72,6 +72,10 @@ const Register = () => {
             setIsLoading((prevValue) => !prevValue);
             alert(e);
         }
+    }
+    const handleSelect = (e)=>{
+        let province = provinces[e];
+        setProvince(province);
     }
     return (
         <Container>
@@ -121,7 +125,7 @@ const Register = () => {
                     <Col sm={4}>
                         <div className='form-group'>
                             <label>Provincia</label>
-                            <DropdownButton
+                            <DropdownButton onSelect={ handleSelect }
                                 id='dropdown-basic-button'
                                 // variant={variant.toLowerCase()}
                                 title='Provincias'
@@ -129,11 +133,10 @@ const Register = () => {
                                 {provinces.map(
                                     (province, index) =>
                                         <>
-                                            <Dropdown.Item onChange={(e) => { setProvince('La Habana') }} key={index} eventKey={index}>{province}</Dropdown.Item>
+                                            <Dropdown.Item key={index} eventKey={index}>{province}</Dropdown.Item>
                                             {index < provinces.length && <Dropdown.Divider />}
                                         </>
                                 )}
-
                             </DropdownButton>
                         </div>
                     </Col>
