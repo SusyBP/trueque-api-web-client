@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import './auth.css';
 import { useState } from 'react';
@@ -6,6 +6,7 @@ import { useHistory } from 'react-router';
 import { Button, Spinner, DropdownButton, Dropdown, Container, Row, Col } from 'react-bootstrap';
 import Axios from 'axios';
 import { sha256 } from 'js-sha256';
+import FormErrors from './FormErrors';
 
 const apiUri = 'http://nayhanapl-001-site1.etempurl.com';
 const apiLocal = 'https://localhost:44395';
@@ -13,25 +14,34 @@ const apiLocal = 'https://localhost:44395';
 const Register = () => {
     const [isLoading, setIsLoading] = useState(false);
 
-    const [name, setName] = useState();
-    const [lastName, setLastName] = useState();
-    const [email, setEmail] = useState();
-    const [address, setAddress] = useState();
-    const [province, setProvince] = useState();
-    const [cellphoneNum, setCellphoneNum] = useState();
-    const [landlineNum, setLandlineNum] = useState();
+    // const [name, setName] = useState();
+    // const [lastName, setLastName] = useState();
+    // const [email, setEmail] = useState();
+    // const [address, setAddress] = useState();
+    // const [province, setProvince] = useState();
+    // const [cellphoneNum, setCellphoneNum] = useState();
+    // const [landlineNum, setLandlineNum] = useState();
     const [password, setPassword] = useState();
-    const [passwordConfirmation, setPasswordConfirmation] = useState();
+    const [passwordConfirmation, setConfirmationPassword] = useState();
+
+    const [user, setUser] = useState({
+        id: '', nombre: '', apellido: '', correo: '', direccion: '',
+        numMovil: '', numFijo: '', provincia: '', token: ''
+    });
+
+    const [formErrors, setFormErrors] = useState({email: '', password:'', cellphoneNum:'', landlineNum:'', address:''});
+    const [isformValid, setIsFormValid] = useState(false);
+    const [validations, setValidations] = useState({isEmailValid: false, isPasswordValid: false});
 
     const history = useHistory();
 
-    const provinces = ['La Habana', 'Mayabeque', 'Artemisa', 'Pinar del Río'];
+    const provinces = ['La Habana', 'Mayabeque', 'Artemisa', 'Pinar del Río', 'Matanzas'];
 
     async function register() {
         try {
             if (password !== passwordConfirmation) {
                 alert('Las contraseñas no coinciden, rectifique');
-                setPasswordConfirmation('');
+                setConfirmationPassword('');
                 return -1;
             }
             const encript = sha256(password);
@@ -39,13 +49,13 @@ const Register = () => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    nombre: name,
-                    apellido: lastName,
-                    numMovil: cellphoneNum,
-                    numFijo: landlineNum,
-                    correo: email,
-                    provincia: province,
-                    dirección: address,
+                    nombre: user.nombre,
+                    apellido: user.apellido,
+                    numMovil: user.numMovil,
+                    numFijo: user.numFijo,
+                    correo: user.correo,
+                    provincia: user.provincia,
+                    dirección: user.direccion,
                     clave: encript,
                 })
             };
@@ -65,23 +75,59 @@ const Register = () => {
             setIsLoading((prevValue) => !prevValue);
             const res = await register();
             setIsLoading((prevValue) => !prevValue);
-            if(res===0){history.push('/entrar');}
-            
+            if (res === 0) { history.push('/entrar'); }
+
         }
         catch (e) {
             setIsLoading((prevValue) => !prevValue);
             alert(e);
         }
     }
-    const handleSelect = (e)=>{
+    const handleSelect = (e) => {
         let province = provinces[e];
-        setProvince(province);
+        setUser(prev => ({...prev, provincia: province}));
     }
 
-    validateField = (fieldName, value) => {
-        let fieldValidationErrors = this.state.formErrors;
-        let emailValid = this.state.emailValid;
-        let passwordValid = this.state.passwordValid;
+
+    const handleOnChange = (e) => {
+        const name = e.target.name;
+        const value = e.target.value;
+
+        switch (name) {
+            case 'name':
+                setUser(prev => ({ ...prev, nombre: value }), () => { });
+                break;
+            case 'lastName':
+                setUser(prev => ({ ...prev, apellido: value }));
+                break;
+            case 'cellphoneNum':
+                setUser(prev => ({ ...prev, numMovil: value }));
+                break;
+            case 'landlineNum':
+                setUser(prev => ({ ...prev, numFijo: value }));
+                break;
+            case 'email':
+                setUser(prev => ({ ...prev, correo: value }));
+                break;
+            case 'address':
+                setUser(prev => ({ ...prev, direccion: value }));
+                break;
+            case 'password':
+                setPassword(value);
+                break;
+            case 'passwordConfirmation':
+                setConfirmationPassword(value);
+                break;
+            default:
+                break;
+        }
+        validateField(name, value);
+    }
+
+    const validateField = (fieldName, value) => {
+        let fieldValidationErrors = formErrors;
+        let emailValid = validations.emailValid;
+        let passwordValid = validations.passwordValid;
       
         switch(fieldName) {
           case 'email':
@@ -95,30 +141,37 @@ const Register = () => {
           default:
             break;
         }
-        this.setState({formErrors: fieldValidationErrors,
-                        emailValid: emailValid,
-                        passwordValid: passwordValid
-                      }, this.validateForm);
+        setFormErrors(fieldValidationErrors);
+        setValidations({emailValid: emailValid, passwordValid: passwordValid});
+        validateForm();
       }
-      
-      validateForm = () => {
-        this.setState({formValid: this.state.emailValid && this.state.passwordValid});
+
+      const validateForm = () => {
+        setIsFormValid(validations.isEmailValid && validations.isPasswordValid);
       }
+
+    //   useEffect(() => {
+    //       validateForm();
+    //       return () => {
+    //         //   cleanup
+    //       }
+    //   }, [user])
     return (
         <Container>
+            <FormErrors formErrors={formErrors}/>
             <form className='container' onSubmit={handleSubmit}>
                 <h3>Registrarse</h3>
                 <Row>
                     <Col sm={6}>
                         <div className='form-group'>
                             <label>Nombre</label>
-                            <input onChange={(e) => { setName(e.target.value) }} className='form-control' type='text' placeholder='Nombre'></input>
+                            <input value={user.nombre} name='name' onChange={handleOnChange} className='form-control' type='text' placeholder='Nombre'></input>
                         </div>
                     </Col>
                     <Col sm={6}>
                         <div className='form-group'>
                             <label>Apellidos</label>
-                            <input onChange={(e) => { setLastName(e.target.value) }} className='form-control' type='text' placeholder='Apellidos'></input>
+                            <input value={user.apellido} name='lastName' onChange={handleOnChange} className='form-control' type='text' placeholder='Apellidos'></input>
                         </div>
                     </Col>
                 </Row>
@@ -126,13 +179,13 @@ const Register = () => {
                     <Col sm={6}>
                         <div className='form-group'>
                             <label>Correo</label>
-                            <input onChange={(e) => { setEmail(e.target.value) }} className='form-control' type='email' placeholder='Correo'></input>
+                            <input value={user.correo} name='email' onChange={handleOnChange} className='form-control' type='email' placeholder='Correo'></input>
                         </div>
                     </Col>
                     <Col sm={6}>
                         <div className='form-group'>
                             <label>Dirección</label>
-                            <input onChange={(e) => { setAddress(e.target.value) }} className='form-control' type='text' placeholder='Dirección'></input>
+                            <input value={user.direccion} name='address' onChange={handleOnChange} className='form-control' type='text' placeholder='Dirección'></input>
                         </div>
                     </Col>
                 </Row>
@@ -140,19 +193,19 @@ const Register = () => {
                     <Col sm={4}>
                         <div className='form-group'>
                             <label>Número Móvil</label>
-                            <input onChange={(e) => { setCellphoneNum(e.target.value) }} className='form-control' type='text' placeholder='Número Móvil'></input>
+                            <input value={user.numMovil} name='cellPhoneNum' onChange={handleOnChange} className='form-control' type='text' placeholder='Número Móvil'></input>
                         </div>
                     </Col>
                     <Col sm={4}>
                         <div className='form-group'>
                             <label>Número Fijo</label>
-                            <input onChange={(e) => { setLandlineNum(e.target.value) }} className='form-control' type='text' placeholder='Número Fijo'></input>
+                            <input value={user.numFijo} name='landlineNum' onChange={handleOnChange} className='form-control' type='text' placeholder='Número Fijo'></input>
                         </div>
                     </Col>
                     <Col sm={4}>
                         <div className='form-group'>
                             <label>Provincia</label>
-                            <DropdownButton onSelect={ handleSelect }
+                            <DropdownButton onSelect={handleSelect}
                                 id='dropdown-basic-button'
                                 // variant={variant.toLowerCase()}
                                 title='Provincias'
@@ -172,18 +225,18 @@ const Register = () => {
                     <Col sm={6}>
                         <div className='form-group'>
                             <label>Contraseña</label>
-                            <input onChange={(e) => { setPassword(e.target.value) }} className='form-control' type='password' placeholder='Contraseña'></input>
+                            <input name='password' value={password} onChange={handleOnChange} className='form-control' type='password' placeholder='Contraseña'></input>
                         </div>
                     </Col>
                     <Col sm={6}>
                         <div className='form-group'>
                             <label>Confirmar contraseña</label>
-                            <input onChange={(e) => { setPasswordConfirmation(e.target.value) }} className='form-control' type='password' placeholder='Confirmar contraseña'></input>
+                            <input name='confirmationPassword' value={passwordConfirmation} onChange={handleOnChange} className='form-control' type='password' placeholder='Confirmar contraseña'></input>
                         </div>
                     </Col>
                 </Row>
 
-                <Button onClick={handleSubmit} className='btn btn-primary btn-block' variant="primary">
+                <Button desabled={isformValid} onClick={handleSubmit} className='btn btn-primary btn-block' variant="primary">
                     {isLoading && <Spinner
                         as="span"
                         animation="border"
@@ -198,4 +251,4 @@ const Register = () => {
     )
 }
 
-export default Register
+export default Register;

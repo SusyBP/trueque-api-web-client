@@ -1,11 +1,12 @@
 import React from 'react';
 
-const FormErrors = ({formErrors}) => {
+const FormErrors = (props) => {
+
     return (<div className='formErrors'>
-        {Object.keys(formErrors).map((fieldName, i) => {
-            if (formErrors[fieldName].length > 0) {
+        {Object.keys(props.formErrors).map((fieldName, i) => {
+            if (props.formErrors[fieldName].length > 0) {
                 return (
-                    <p key={i}>{fieldName} {formErrors[fieldName]}</p>
+                    <p key={i}>{fieldName} {props.formErrors[fieldName]}</p>
                 )
             } else {
                 return '';
