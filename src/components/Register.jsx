@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, { useEffect } from 'react'
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import './auth.css';
 import { useState } from 'react';
@@ -14,24 +14,17 @@ const apiLocal = 'https://localhost:44395';
 const Register = () => {
     const [isLoading, setIsLoading] = useState(false);
 
-    // const [name, setName] = useState();
-    // const [lastName, setLastName] = useState();
-    // const [email, setEmail] = useState();
-    // const [address, setAddress] = useState();
-    // const [province, setProvince] = useState();
-    // const [cellphoneNum, setCellphoneNum] = useState();
-    // const [landlineNum, setLandlineNum] = useState();
-    const [password, setPassword] = useState();
-    const [passwordConfirmation, setConfirmationPassword] = useState();
+    const [password, setPassword] = useState('');
+    const [passwordConfirmation, setConfirmationPassword] = useState('');
 
     const [user, setUser] = useState({
         id: '', nombre: '', apellido: '', correo: '', direccion: '',
-        numMovil: '', numFijo: '', provincia: '', token: ''
+        numMovil: '', numFijo: '', provincia: 'Provincia', token: ''
     });
 
-    const [formErrors, setFormErrors] = useState({email: '', password:'', cellphoneNum:'', landlineNum:'', address:''});
+    const [formErrors, setFormErrors] = useState({ email: '', password: '', cellphoneNum: '', landlineNum: '', address: '', confirmationPassword: '' });
     const [isformValid, setIsFormValid] = useState(false);
-    const [validations, setValidations] = useState({isEmailValid: false, isPasswordValid: false});
+    const [validations, setValidations] = useState({ isEmailValid: false, isPasswordValid: false, isConfirmationPasswordValid: false });
 
     const history = useHistory();
 
@@ -71,6 +64,7 @@ const Register = () => {
 
     const handleSubmit = async e => {
         e.preventDefault();
+        // console.log(user);
         try {
             setIsLoading((prevValue) => !prevValue);
             const res = await register();
@@ -85,7 +79,7 @@ const Register = () => {
     }
     const handleSelect = (e) => {
         let province = provinces[e];
-        setUser(prev => ({...prev, provincia: province}));
+        setUser(prev => ({ ...prev, provincia: province }));
     }
 
 
@@ -95,7 +89,7 @@ const Register = () => {
 
         switch (name) {
             case 'name':
-                setUser(prev => ({ ...prev, nombre: value }), () => { });
+                setUser(prev => ({ ...prev, nombre: value }));
                 break;
             case 'lastName':
                 setUser(prev => ({ ...prev, apellido: value }));
@@ -115,40 +109,48 @@ const Register = () => {
             case 'password':
                 setPassword(value);
                 break;
-            case 'passwordConfirmation':
+            case 'confirmationPassword':
                 setConfirmationPassword(value);
                 break;
             default:
                 break;
         }
         validateField(name, value);
+        console.log(isformValid);
     }
 
     const validateField = (fieldName, value) => {
         let fieldValidationErrors = formErrors;
-        let emailValid = validations.emailValid;
-        let passwordValid = validations.passwordValid;
-      
-        switch(fieldName) {
-          case 'email':
-            emailValid = value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
-            fieldValidationErrors.email = emailValid ? '' : ' is invalid';
-            break;
-          case 'password':
-            passwordValid = value.length >= 6;
-            fieldValidationErrors.password = passwordValid ? '': ' is too short';
-            break;
-          default:
-            break;
+        let emailValid = validations.isEmailValid;
+        let passwordValid = validations.isPasswordValid;
+        let confirmationPasswordValid = validations.isConfirmationPasswordValid;
+
+        switch (fieldName) {
+            case 'email':
+                const matchRes = value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
+                emailValid = matchRes !== null && matchRes.length > 0;
+                fieldValidationErrors.email = emailValid ? '' : ' is invalid';
+                break;
+            case 'password':
+                passwordValid = value.length >= 6;
+                fieldValidationErrors.password = passwordValid ? '' : ' is too short';
+                break;
+            case 'confirmationPassword':
+                confirmationPasswordValid = password === value;
+                fieldValidationErrors.confirmationPassword = confirmationPasswordValid? '' : 'password and confirmation do not match';
+                break;
+            default:
+                break;
         }
         setFormErrors(fieldValidationErrors);
-        setValidations({emailValid: emailValid, passwordValid: passwordValid});
+        setValidations({ isEmailValid: emailValid, isPasswordValid: passwordValid, isConfirmationPasswordValid: confirmationPasswordValid });
         validateForm();
-      }
+    }
 
-      const validateForm = () => {
-        setIsFormValid(validations.isEmailValid && validations.isPasswordValid);
-      }
+    const validateForm = () => {
+        console.log(`validations.isEmailValid: ${validations.isEmailValid}, validations.isPasswordValid: ${ validations.isPasswordValid}`, `validations.isConfirmationPasswordValid: ${ validations.isConfirmationPasswordValid}`);
+        setIsFormValid(validations.isEmailValid && validations.isPasswordValid && validations.isConfirmationPasswordValid);
+    }
 
     //   useEffect(() => {
     //       validateForm();
@@ -158,20 +160,20 @@ const Register = () => {
     //   }, [user])
     return (
         <Container>
-            <FormErrors formErrors={formErrors}/>
+            <FormErrors formErrors={formErrors} />
             <form className='container' onSubmit={handleSubmit}>
                 <h3>Registrarse</h3>
                 <Row>
                     <Col sm={6}>
                         <div className='form-group'>
                             <label>Nombre</label>
-                            <input value={user.nombre} name='name' onChange={handleOnChange} className='form-control' type='text' placeholder='Nombre'></input>
+                            <input name='name' onChange={handleOnChange} className='form-control' type='text' placeholder='Nombre'></input>
                         </div>
                     </Col>
                     <Col sm={6}>
                         <div className='form-group'>
                             <label>Apellidos</label>
-                            <input value={user.apellido} name='lastName' onChange={handleOnChange} className='form-control' type='text' placeholder='Apellidos'></input>
+                            <input name='lastName' onChange={handleOnChange} className='form-control' type='text' placeholder='Apellidos'></input>
                         </div>
                     </Col>
                 </Row>
@@ -179,13 +181,13 @@ const Register = () => {
                     <Col sm={6}>
                         <div className='form-group'>
                             <label>Correo</label>
-                            <input value={user.correo} name='email' onChange={handleOnChange} className='form-control' type='email' placeholder='Correo'></input>
+                            <input name='email' onChange={handleOnChange} className='form-control' type='email' placeholder='Correo'></input>
                         </div>
                     </Col>
                     <Col sm={6}>
                         <div className='form-group'>
                             <label>Dirección</label>
-                            <input value={user.direccion} name='address' onChange={handleOnChange} className='form-control' type='text' placeholder='Dirección'></input>
+                            <input name='address' onChange={handleOnChange} className='form-control' type='text' placeholder='Dirección'></input>
                         </div>
                     </Col>
                 </Row>
@@ -193,13 +195,13 @@ const Register = () => {
                     <Col sm={4}>
                         <div className='form-group'>
                             <label>Número Móvil</label>
-                            <input value={user.numMovil} name='cellPhoneNum' onChange={handleOnChange} className='form-control' type='text' placeholder='Número Móvil'></input>
+                            <input name='cellphoneNum' onChange={handleOnChange} className='form-control' type='text' placeholder='Número Móvil'></input>
                         </div>
                     </Col>
                     <Col sm={4}>
                         <div className='form-group'>
                             <label>Número Fijo</label>
-                            <input value={user.numFijo} name='landlineNum' onChange={handleOnChange} className='form-control' type='text' placeholder='Número Fijo'></input>
+                            <input name='landlineNum' onChange={handleOnChange} className='form-control' type='text' placeholder='Número Fijo'></input>
                         </div>
                     </Col>
                     <Col sm={4}>
@@ -208,7 +210,7 @@ const Register = () => {
                             <DropdownButton onSelect={handleSelect}
                                 id='dropdown-basic-button'
                                 // variant={variant.toLowerCase()}
-                                title='Provincias'
+                                title={user.provincia}
                             >
                                 {provinces.map(
                                     (province, index) =>
@@ -236,7 +238,7 @@ const Register = () => {
                     </Col>
                 </Row>
 
-                <Button desabled={isformValid} onClick={handleSubmit} className='btn btn-primary btn-block' variant="primary">
+                <Button disabled={!isformValid} onClick={handleSubmit} className='btn btn-primary btn-block' variant="primary">
                     {isLoading && <Spinner
                         as="span"
                         animation="border"

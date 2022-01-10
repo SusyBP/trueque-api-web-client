@@ -8,22 +8,24 @@ import { useHistory } from 'react-router';
 
 const Profile = () => {
     const history = useHistory();
-    const [user, setUser] = useState({ nombre: '', apellido: '', correo: '', direccion: '',
-     provincia: '', numMovil: '', numFijo: '' });
-     useEffect(() => {
-        try{
-            const item = (localStorage.getItem('user'));
+    const [user, setUser] = useState({
+        nombre: '', apellido: '', correo: '', direccion: '',
+        provincia: '', numMovil: '', numFijo: ''
+    });
+    useEffect(() => {
+        try {
+            const item = localStorage.getItem('user');
             var json = JSON.parse(item);
-            [json] = json;
             setUser(json);
         }
-        catch(e){
-            history.push('/entrar');        
-        } 
+        catch (e) {
+            alert(`Profile/useEffect hook: ${e}`)
+            //history.push('/entrar');        
+        }
         //  return () => {
         //      cleanup
         //  }
-     }, []) 
+    }, [])
 
 
     return (
