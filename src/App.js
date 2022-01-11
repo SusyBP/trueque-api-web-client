@@ -17,18 +17,18 @@ import { useState, useEffect } from 'react';
 function App() {
   const history = useHistory();
   const [user, setUser] = useState();
-  
+
   useEffect(() => {
     try {
       let item = localStorage.getItem('user');
       if (item !== null) {
-        let json = JSON.parse(item);
+        let [json] = JSON.parse(item);
         setUser(json);
       }
     }
     catch (e) {
-        alert(`metodo App/useEffect hook: ${e}`);
-      }    
+      alert(`metodo App/useEffect hook: ${e}`);
+    }
   }, [])
 
   const logout = () => {
@@ -46,10 +46,10 @@ function App() {
             <Link to='/inicio' className='navbar-brand'>Inicio</Link>
             <div className='collapse navbar-collapse'>
               <ul className='navbar-nav ml-auto'>
-                {user===undefined&&(<li className='nav-item'>
+                {user === undefined && (<li className='nav-item'>
                   <Link className='nav-link' to='/entrar'>Entrar</Link>
                 </li>)}
-                {user===undefined&&(<li className='nav-item'>
+                {user === undefined && (<li className='nav-item'>
                   <Link className='nav-link' to='/registrarse'>Registrarse</Link>
                 </li>)}
                 {user && (<li className='nav-item'>
@@ -57,7 +57,7 @@ function App() {
                 </li>)}
                 {user && (<li className='nav-item'>
                   {/*<Button className='nav-link' onClick={handleClick(history)}>Salir</Button>*/}
-                  <DropdownButton id="dropdown-basic-button" title={user.nombre?user.nombre:'usuario'}>
+                  <DropdownButton id="dropdown-basic-button" title={user.nombre ? user.nombre : 'usuario'}>
                     <Dropdown.Item onClick={logout} href="/entrar">Salir</Dropdown.Item>
                     <Dropdown.Item onClick={changePass} href="/cambiar_clave">Cambiar contraseña</Dropdown.Item>
                   </DropdownButton>
@@ -80,8 +80,8 @@ function App() {
                 <Profile />
               </Route>
               <Route exact path='/cambiar_clave'>
-                  <ChangePassword/>
-                </Route>
+                <ChangePassword />
+              </Route>
             </Switch>
           </div>
         </div>

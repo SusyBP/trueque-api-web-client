@@ -46,20 +46,22 @@ const Login = (props) => {
             }
         )
         if (res.status !== 200) { return -1; }
-        const [json] = await res.json();
-        saveProfile(json);
+        const json = await res.json();
+        saveProfile(json);//array
+        return 0;
     }
     const handleSubmit = async e => {
         try {
             e.preventDefault();
             setIsLoading((prevValue) => !prevValue)
-            await login();
+            const res = await login();
             setIsLoading((prevValue) => !prevValue);
+            if(res===-1){ alert('Nombre de usuario y/o contraseña inválidos'); return;}
             history.push('/perfil');           
         }
         catch (e) {
             setIsLoading((prevValue) => !prevValue);
-            alert('metodo Login/handlesubmmit:Nombre de usuario y/o contraseña inválidos');
+            alert(`método Login/handlesubmmit: ${e}`);
         }
     }
 

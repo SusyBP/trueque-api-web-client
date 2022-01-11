@@ -15,12 +15,14 @@ const Profile = () => {
     useEffect(() => {
         try {
             const item = localStorage.getItem('user');
-            var json = JSON.parse(item);
-            setUser(json);
+            if (item !== null) {
+                var [json] = JSON.parse(item);
+                setUser(json);
+            }
         }
         catch (e) {
             alert(`Profile/useEffect hook: ${e}`)
-            //history.push('/entrar');        
+            history.push('/entrar');
         }
         //  return () => {
         //      cleanup
