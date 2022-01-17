@@ -25,7 +25,7 @@ const MisTrueques = () => {
             let data = JSON.parse(user);
             [user] = data
             let res = await fetch(
-                `${apiLocal}/GetTablaTrueque?id=${user.id}`,
+                `${apiUri}/GetTablaTrueque?id=${user.id}`,
                 {
                     method: 'GET',
                     headers: {

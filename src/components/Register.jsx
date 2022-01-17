@@ -52,7 +52,7 @@ const Register = () => {
                     clave: encript,
                 })
             };
-            let response = await fetch(`${apiLocal}/api/persona`, requestOptions);
+            let response = await fetch(`${apiUri}/api/persona`, requestOptions);
             const data = await response.json();
             //console.log(data);
             return 0;

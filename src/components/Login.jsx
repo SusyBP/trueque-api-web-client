@@ -36,7 +36,7 @@ const Login = (props) => {
     async function login() {
         let encript = sha256(token);
         let res = await fetch(
-            `${apiLocal}/api/login?nombre=${userLocal.nombre}&clave=${encript}`,
+            `${apiUri}/api/login?nombre=${userLocal.nombre}&clave=${encript}`,
             {
                 method: 'GET',
                 headers: {
